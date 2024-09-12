@@ -18,7 +18,9 @@ FROM base as build
 
 # Install packages needed for building, including Libtool
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential autoconf automake libtool git libpq-dev libvips pkg-config m4 perl libltdl-dev
+    apt-get install --no-install-recommends -y build-essential autoconf automake libtool git libpq-dev libvips pkg-config m4 perl libltdl-dev 
+    # && \
+    # rm -rf /var/lib/apt/lists/*
 
 # # Navigate to the directory of the component you want to build
 WORKDIR /

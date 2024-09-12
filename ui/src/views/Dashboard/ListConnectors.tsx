@@ -141,7 +141,7 @@ const ListConnectors = ({
             <VStack justify='center' height='100%'>
               <img src={NoConnectorsFound} alt='no-connectors-found' />
               <Text color='gray.600' size='xs' fontWeight='semibold'>
-                No connectors found
+                No connectors found here. Please do the needful
               </Text>
             </VStack>
           )}

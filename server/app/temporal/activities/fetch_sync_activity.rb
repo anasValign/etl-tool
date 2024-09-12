@@ -11,7 +11,11 @@ module Activities
 
     def execute(sync_id)
       sync = Sync.find_by(id: sync_id)
-      raise SyncNotFound, "Sync with specified ID does not exist" unless sync
+      puts "mohak_id, #{sync_id}";
+      if sync.nil?
+        raise "Sync with specified ID does not exist"
+      end
+      # raise SyncNotFound, "Sync with specified ID does not exist" unless sync
 
       sync
     end
