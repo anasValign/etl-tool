@@ -160,9 +160,9 @@ const SignIn = (): JSX.Element => {
                 <Stack>
                   <Box position='relative' top='12'>
                     <Box
-                      bgColor={logoUrl ? 'gray.100' : 'brand.400'}
-                      h='80px'
-                      w={logoUrl ? '150px' : '80px'}
+                      // bgColor={logoUrl ? 'gray.100' : 'brand.400'}
+                      h='100px'
+                      w={'150px'}
                       display='flex'
                       justifyContent='center'
                       alignItems='center'
@@ -171,7 +171,7 @@ const SignIn = (): JSX.Element => {
                     >
                       <Image
                         src={logoUrl ? logoUrl : MultiwovenIcon}
-                        width={logoUrl ? '100%' : '45px'}
+                        width={'100%'}
                         alt={`${brandName} Logo in White`}
                       />
                     </Box>

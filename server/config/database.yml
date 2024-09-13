@@ -5,21 +5,30 @@ default: &default
 
 development:
   <<: *default
-  host: <%= ENV['DB_HOST'] %>
-  username: <%= ENV['DB_USERNAME'] %>
-  password: <%= ENV['DB_PASSWORD'] %>
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  pool: 5 
+  username: postgres
+  password: qwerty
   database: multiwoven_server_development
 
 test:
   <<: *default
-  host: <%= ENV['DB_HOST'] %>
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV['DB_HOST'] %> 
+  pool: 5 
   username: <%= ENV['DB_USERNAME'] %>
   password: <%= ENV['DB_PASSWORD'] %>
   database: multiwoven_server_test
 
 production:
   <<: *default
-  host: <%= ENV['DB_HOST'] %> 
-  username: <%= ENV['DB_USERNAME'] %> 
-  password: <%= ENV['DB_PASSWORD'] %>
+  adapter: postgresql
+  encoding: unicode
+  host: localhost
+  pool: 5 
+  username: postgres 
+  password: qwerty
   database: multiwoven_server_production

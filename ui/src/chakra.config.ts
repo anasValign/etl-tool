@@ -4,7 +4,7 @@ import '@fontsource-variable/manrope';
 
 const defaultExtension = {
   colors: {
-    mw_orange: '#E63D2D',
+    mw_orange: '#b7ed3f',
     brand: {
       100: '#FFE7E6',
       200: '#FAC5C3',
@@ -66,31 +66,31 @@ const defaultExtension = {
     Button: {
       variants: {
         solid: {
-          bgColor: 'brand.400',
-          _hover: { bgColor: 'brand.300' },
+          bgColor: '#b7ed3f',
+          _hover: { bgColor: '#b7ed3f' },
           color: 'white',
           _loading: {
             _hover: {
-              bgColor: 'brand.400',
+              bgColor: '#b7ed3f',
             },
           },
           _disabled: {
             _hover: {
-              bgColor: 'brand.400',
+              bgColor: '#b7ed3f',
             },
           },
         },
         outline: {
-          bgColor: 'gray.100',
-          _hover: { bgColor: 'brand.400', color: 'white' },
-          color: 'brand.400',
+          bgColor: '#b7ed3f',
+          _hover: { bgColor: '#b7ed3f', color: 'white' },
+          color: '#b7ed3f',
           outline: '1px',
-          borderColor: 'brand.400',
+          borderColor: '#b7ed3f',
           _loading: {
-            _hover: { bgColor: 'brand.400', color: 'white' },
+            _hover: { bgColor: '#b7ed3f', color: 'white' },
           },
           _disabled: {
-            _hover: { bgColor: 'brand.400', color: 'white' },
+            _hover: { bgColor: '#b7ed3f', color: 'white' },
           },
         },
         ghost: {
@@ -274,7 +274,7 @@ const defaultExtension = {
   fontWeights: {
     semiBold: 600,
   },
-  brandName: 'Multiwoven',
+  brandName: 'V-Align',
   logoUrl: '',
 };
 

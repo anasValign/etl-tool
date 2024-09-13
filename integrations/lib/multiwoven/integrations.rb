@@ -47,6 +47,7 @@ require_relative "integrations/source/bigquery/client"
 require_relative "integrations/source/postgresql/client"
 require_relative "integrations/source/databricks/client"
 require_relative "integrations/source/salesforce_consumer_goods_cloud/client"
+require_relative "integrations/source/zoho_books/client"
 
 # Destination
 require_relative "integrations/destination/klaviyo/client"
@@ -60,6 +61,7 @@ require_relative "integrations/destination/stripe/client"
 require_relative "integrations/destination/salesforce_consumer_goods_cloud/client"
 require_relative "integrations/destination/sftp/client"
 require_relative "integrations/destination/postgresql/client"
+require_relative "integrations/destination/tally/client"
 
 module Multiwoven
   module Integrations

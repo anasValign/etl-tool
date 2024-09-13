@@ -40,17 +40,20 @@ RUN ./configure && \
 
 # Install iodbc
 RUN apt-get update -qq && \
-    apt-get install -y libiodbc2 && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y libiodbc2 
+    # && \
+    # rm -rf /var/lib/apt/lists/*
 
 # Hack for snowflake odbc driver
 RUN apt-get update -qq && \
-    apt-get install -y unixodbc && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y unixodbc 
+    # && \
+    # rm -rf /var/lib/apt/lists/*
 
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends wget && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get install -y --no-install-recommends wget 
+    # && \
+    # rm -rf /var/lib/apt/lists/*
 
 # Install the Snowflake ODBC driver
 ENV LD_LIBRARY_PATH=/usr/local/lib:${LD_LIBRARY_PATH}
@@ -113,6 +116,10 @@ RUN useradd rails --create-home --shell /bin/bash && \
     chown -R rails:rails /rails/db /rails/log /rails/storage /rails/tmp
 
 USER rails:rails
+
+# RUN chmod +x /rails/bin/docker-entrypoint
+
+# COPY ./rails/bin/docker-entrypoint /rails/bin/docker-entrypoint
 
 # Entrypoint prepares the database.
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
