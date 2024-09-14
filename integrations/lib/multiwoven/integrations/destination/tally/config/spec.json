@@ -1,44 +1,45 @@
 {
-    "documentation_url": "https://docs.multiwoven.com/integrations/destination/salesforce_crm",
-    "stream_type": "static",
-    "connection_specification": {
+  "documentation_url": "https://docs.multiwoven.com/integrations/destination/tally",
+  "stream_type": "static",
+  "connection_specification": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Tally",
       "type": "object",
       "required": [
-        "access_token",
-        "refresh_token",
-        "instance_url",
-        "client_id",
-        "client_secret"
+          "server_url",
+          "company_name"
       ],
       "properties": {
-        "access_token": {
-          "type": "string",
-          "title": "Access Token",
-          "order": 0
-        },
-        "refresh_token": {
-          "type": "string",
-          "title": "Refresh Token",
-          "order": 1
-        },
-        "instance_url": {
-          "type": "string",
-          "title": "Instance URL",
-          "order": 2
-        },
-        "client_id": {
-          "type": "string",
-          "title": "Client ID",
-          "order": 3
-        },
-        "client_secret": {
-          "type": "string",
-          "title": "Client Secret",
-          "order": 4
-        }
+          "server_url": {
+              "type": "string",
+              "title": "Server URL",
+              "order": 0,
+              "description": "The URL or IP address of the Tally server."
+          },
+          "company_name": {
+              "type": "string",
+              "title": "Company Name",
+              "order": 1,
+              "description": "The company name in Tally to connect with."
+          },
+          "license_key": {
+              "type": "string",
+              "title": "Tally License Key",
+              "order": 2,
+              "description": "Tally license key (if applicable)."
+          },
+          "username": {
+              "type": "string",
+              "title": "Tally Username",
+              "order": 3,
+              "description": "Username for authentication (if required)."
+          },
+          "password": {
+              "type": "string",
+              "title": "Tally Password",
+              "order": 4,
+              "description": "Password for authentication (if required)."
+          }
       }
-    }
   }
-  
+}

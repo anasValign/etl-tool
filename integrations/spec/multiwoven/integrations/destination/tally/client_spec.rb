@@ -10,15 +10,15 @@ RSpec.describe Multiwoven::Integrations::Destination::Tally::Client do # rubocop
   let(:client) { described_class.new }
   let(:connection_config) do
     {
-      oauth_token: "oauth_token",
-      refresh_token: "refresh_token",
-      instance_url: "https://your-instance-url.salesforce.com",
-      client_id: "client_id",
-      client_secret: "client_secret"
+      server_url: "http://localhost:9000", # Example server URL for Tally
+      company_name: "Test Company",
+      license_key: "license_key",
+      username: "username",
+      password: "password"
     }
   end
 
-  let(:salesforce_account_json_schema) do
+  let(:tally_account_json_schema) do
     catalog = client.discover.catalog
     catalog.streams.find { |stream| stream.name == "Account" }.json_schema
   end
@@ -32,7 +32,7 @@ RSpec.describe Multiwoven::Integrations::Destination::Tally::Client do # rubocop
         }
       },
       destination: {
-        name: "Salesforce CRM",
+        name: "Tally",
         type: "destination",
         connection_specification: connection_config
       },
@@ -47,7 +47,7 @@ RSpec.describe Multiwoven::Integrations::Destination::Tally::Client do # rubocop
         action: "create",
         request_rate_limit: 4,
         rate_limit_unit_seconds: 1,
-        json_schema: salesforce_account_json_schema
+        json_schema: tally_account_json_schema
       },
       sync_mode: "full_refresh",
       cursor_field: "timestamp",
@@ -64,7 +64,7 @@ RSpec.describe Multiwoven::Integrations::Destination::Tally::Client do # rubocop
   describe "#check_connection" do
     context "when the connection is successful" do
       before do
-        stub_request(:post, "https://login.salesforce.com/services/oauth2/token")
+        stub_request(:post, "http://localhost:9000") # Example stub for Tally server
           .to_return(status: 200, body: "", headers: {})
       end
 
@@ -123,7 +123,7 @@ RSpec.describe Multiwoven::Integrations::Destination::Tally::Client do # rubocop
 
   describe "#meta_data" do
     it "serves it github image url as icon" do
-      image_url = "https://raw.githubusercontent.com/Multiwoven/multiwoven/main/integrations/lib/multiwoven/integrations/destination/salesforce_crm/icon.svg"
+      image_url = "https://raw.githubusercontent.com/Multiwoven/multiwoven/main/integrations/lib/multiwoven/integrations/destination/tally/icon.svg"
       expect(client.send(:meta_data)[:data][:icon]).to eq(image_url)
     end
   end
@@ -135,10 +135,10 @@ RSpec.describe Multiwoven::Integrations::Destination::Tally::Client do # rubocop
   end
 
   def stub_create_request(id, name, response_code)
-    stub_request(:post, "https://your-instance-url.salesforce.com/services/data/v59.0/sobjects/Account")
+    stub_request(:post, "http://localhost:9000") # Example Tally endpoint
       .with(
         body: hash_including("Id" => id, "Name" => name),
-        headers: { "Accept" => "*/*", "Authorization" => "OAuth",
+        headers: { "Accept" => "*/*", "Authorization" => "Basic",
                    "Content-Type" => "application/json" }
       ).to_return(status: response_code, body: "", headers: {})
   end
