@@ -16,7 +16,7 @@ GIT
 PATH
   remote: /home/a14a19/a14a19/projects/valign/multi-woven/multiwoven-v1/integrations
   specs:
-    multiwoven-integrations (0.1.66)
+    multiwoven-integrations (0.1.68)
       activesupport
       async-websocket
       csv
