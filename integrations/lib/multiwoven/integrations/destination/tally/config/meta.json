@@ -1,16 +1,15 @@
 {
-    "data": {
-      "name": "Tally",
-      "title": "Tally",
-      "connector_type": "destination",
-      "category": "CRM",
-      "documentation_url": "https://docs.mutliwoven.com",
-      "github_issue_label": "destination-salesforce-crm",
-      "icon": "icon.svg",
-      "license": "MIT",
-      "release_stage": "alpha",
-      "support_level": "community",
-      "tags": ["language:ruby", "multiwoven"]
-    }
+  "data": {
+    "name": "Tally",
+    "title": "Tally",
+    "connector_type": "destination",
+    "category": "Accounting",
+    "documentation_url": "https://docs.multiwoven.com/tally",
+    "github_issue_label": "destination-tally",
+    "icon": "icon.svg",
+    "license": "MIT",
+    "release_stage": "alpha",
+    "support_level": "community",
+    "tags": ["language:ruby", "multiwoven", "accounting", "tally"]
   }
-  
+}
