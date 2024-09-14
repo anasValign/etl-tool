@@ -7,16 +7,21 @@ RSpec.describe Multiwoven::Integrations::Source::ZohoBooks::Client do # rubocop:
     WebMock.disable_net_connect!(allow_localhost: true)
   end
 
+  # ! before this check whether the access_token is valid or not
+  # ! connection here
   let(:client) { described_class.new }
   let(:connection_config) do
     {
-      access_token: "access_token"
+      access_token: "access_token",
+      client_id: "client_id",
+      client_secret: "client_secret",
+      organization_id: "organization_id"
     }
   end
 
-  let(:hubspot_contacts_json_schema) do
+  let(:zohobooks_invoices_json_schema) do
     catalog = client.discover.catalog
-    catalog.streams.find { |stream| stream.name == "contacts" }.json_schema
+    catalog.streams.find { |stream| stream.name == "invoices" }.json_schema
   end
 
   let(:sync_config_json) do
@@ -28,22 +33,22 @@ RSpec.describe Multiwoven::Integrations::Source::ZohoBooks::Client do # rubocop:
         }
       },
       destination: {
-        name: "Hubspot CRM",
+        name: "Zoho Books",
         type: "destination",
         connection_specification: connection_config
       },
       model: {
         name: "ExampleModel",
-        query: "SELECT * FROM CALL_CENTER LIMIT 1",
+        query: "SELECT * FROM INVOICES LIMIT 1",
         query_type: "raw_sql",
-        primary_key: "id"
+        primary_key: "invoice_id"
       },
       stream: {
-        name: "contacts",
+        name: "invoices",
         action: "create",
         request_rate_limit: 4,
         rate_limit_unit_seconds: 1,
-        json_schema: hubspot_contacts_json_schema
+        json_schema: zohobooks_invoices_json_schema
       },
       sync_mode: "full_refresh",
       cursor_field: "timestamp",
@@ -52,15 +57,15 @@ RSpec.describe Multiwoven::Integrations::Source::ZohoBooks::Client do # rubocop:
 
   let(:records) do
     [
-      build_record("developer@multiwoven.com"),
-      build_record("developer_second@multiwoven.com")
+      build_record("invoice_001"),
+      build_record("invoice_002")
     ]
   end
 
   describe "#check_connection" do
     context "when the connection is successful" do
       before do
-        stub_request(:post, "https://login.salesforce.com/services/oauth2/token")
+        stub_request(:post, "https://accounts.zoho.com/oauth/v2/token")
           .to_return(status: 200, body: "", headers: {})
       end
 
@@ -96,10 +101,10 @@ RSpec.describe Multiwoven::Integrations::Source::ZohoBooks::Client do # rubocop:
       expect(catalog.request_rate_limit_unit).to eql("minute")
       expect(catalog.request_rate_concurrency).to eql(10)
 
-      account_stream = catalog.streams.first
-      expect(account_stream.request_rate_limit).to eql(0)
-      expect(account_stream.request_rate_limit_unit).to eql("minute")
-      expect(account_stream.request_rate_concurrency).to eql(0)
+      invoice_stream = catalog.streams.first
+      expect(invoice_stream.request_rate_limit).to eql(0)
+      expect(invoice_stream.request_rate_limit_unit).to eql("minute")
+      expect(invoice_stream.request_rate_concurrency).to eql(0)
 
       catalog.streams.each do |stream|
         expect(stream.supported_sync_modes).to eql(%w[incremental])
@@ -110,8 +115,8 @@ RSpec.describe Multiwoven::Integrations::Source::ZohoBooks::Client do # rubocop:
   describe "#write" do
     context "when the write operation is successful" do
       before do
-        stub_create_request("developer@multiwoven.com", 200)
-        stub_create_request("developer_second@multiwoven.com", 200)
+        stub_create_request("invoice_001", 200)
+        stub_create_request("invoice_002", 200)
       end
 
       it "increments the success count" do
@@ -124,8 +129,8 @@ RSpec.describe Multiwoven::Integrations::Source::ZohoBooks::Client do # rubocop:
 
     context "when the write operation fails" do
       before do
-        stub_create_request("developer@multiwoven.com", 403)
-        stub_create_request("developer_second@multiwoven.com", 403)
+        stub_create_request("invoice_001", 403)
+        stub_create_request("invoice_002", 403)
       end
 
       it "increments the failure count" do
@@ -139,29 +144,29 @@ RSpec.describe Multiwoven::Integrations::Source::ZohoBooks::Client do # rubocop:
 
   describe "#meta_data" do
     it "serves it github image url as icon" do
-      image_url = "https://raw.githubusercontent.com/Multiwoven/multiwoven/main/integrations/lib/multiwoven/integrations/destination/hubspot/icon.svg"
+      image_url = "https://raw.githubusercontent.com/Multiwoven/multiwoven/main/integrations/lib/multiwoven/integrations/destination/zohobooks/icon.svg"
       expect(client.send(:meta_data)[:data][:icon]).to eq(image_url)
     end
   end
 
   private
 
-  def build_record(email)
+  def build_record(invoice_id)
     {
-      "properties": { "email": email }
+      "properties": { "invoice_id": invoice_id }
     }
   end
 
-  def stub_create_request(email, response_code)
-    stub_request(:post, "https://api.hubapi.com/crm/v3/objects/contacts")
+  def stub_create_request(invoice_id, response_code)
+    stub_request(:post, "https://books.zoho.com/api/v3/invoices")
       .with(
-        body: "{\"properties\":{\"email\":\"#{email}\"}}",
+        body: "{\"properties\":{\"invoice_id\":\"#{invoice_id}\"}}",
         headers: {
           "Accept" => "application/json",
           "Authorization" => "Bearer access_token",
           "Content-Type" => "application/json",
           "Expect" => "",
-          "User-Agent" => "hubspot-api-client-ruby; 17.2.0"
+          "User-Agent" => "zohobooks-api-client-ruby; 1.0.0"
         }
       )
       .to_return(status: response_code, body: "", headers: {})
