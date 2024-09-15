@@ -5,7 +5,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Zoho Books",
       "type": "object",
-      "required": ["client_id", "client_secret", "access_token", "organization_id"],
+      "required": ["client_id", "client_secret", "refresh_token", "organization_id", "data_center"],
       "properties": {
         "client_id": {
           "type": "string",
@@ -19,10 +19,10 @@
           "description": "The OAuth 2.0 client secret for Zoho Books API access.",
           "order": 1
         },
-        "access_token": {
+        "refresh_token": {
           "type": "string",
-          "title": "Access Token",
-          "description": "The OAuth 2.0 access token for Zoho Books API access.",
+          "title": "Refresh Token",
+          "description": "The OAuth 2.0 refresh token for Zoho Books API access.",
           "order": 2
         },
         "organization_id": {
@@ -30,6 +30,12 @@
           "title": "Organization ID",
           "description": "The unique identifier for your Zoho Books organization.",
           "order": 3
+        },
+        "data_center": {
+          "type": "string",
+          "title": "Data Center",
+          "description": "The unique identifier for your Zoho Books organization.",
+          "order": 4
         }
       }
     }

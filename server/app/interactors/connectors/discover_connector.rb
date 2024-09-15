@@ -24,9 +24,11 @@ module Connectors
     end
 
     def connector_client(connector)
+      # url = ""
       @connector_client ||= Multiwoven::Integrations::Service.connector_class(
         connector.connector_type.camelize,
-        connector.connector_name.camelize
+        connector.connector_name.camelize,
+        # url
       ).new
     end
 

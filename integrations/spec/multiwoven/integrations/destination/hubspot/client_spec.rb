@@ -88,6 +88,7 @@ RSpec.describe Multiwoven::Integrations::Destination::Hubspot::Client do # ruboc
   end
 
   describe "#discover" do
+    puts "#discover HUBSPOT: --------------------------------------------------------"
     it "returns a catalog" do
       message = client.discover
       catalog = message.catalog

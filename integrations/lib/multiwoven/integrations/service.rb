@@ -18,10 +18,38 @@ module Multiwoven
           }
         end
 
-        def connector_class(connector_type, connector_name)
+        def connector_class(connector_type, connector_name) 
+          # *args
           Object.const_get(
             "Multiwoven::Integrations::#{connector_type}::#{connector_name}::Client"
           )
+
+          # # Retrieve the class dynamically
+          # klass = Object.const_get(
+          #   "Multiwoven::Integrations::#{connector_type}::#{connector_name}::Client"
+          # )
+
+          # # Instantiate the class (assuming it's not a singleton)
+          # client_instance = klass.new
+
+          # # Only apply base_url if connector_name starts with "Zoho" or "zoho"
+          # if connector_name.match?(/^Zoho/i)
+          #   # Check for base_url in the args
+          #   base_url = args.find { |arg| arg.is_a?(String) && arg.start_with?("http") }
+
+          #   # If base_url is found, call the method to set it
+          #   if base_url
+          #     if client_instance.respond_to?(:setting_base_url)
+          #       client_instance.setting_base_url(base_url)
+          #     else
+          #       raise NoMethodError, "Undefined method `setting_base_url` for #{client_instance.class}"
+          #     end
+          #   end
+          # end
+
+          # # Return the instance for further use
+          # klass
+
         end
 
         def logger

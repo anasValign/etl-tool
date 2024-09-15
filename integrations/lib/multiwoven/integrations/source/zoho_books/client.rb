@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# require "zoho_books" # or the correct gem for Zoho Books
 require "stringio"
 
 module Multiwoven
@@ -14,8 +15,8 @@ module Multiwoven
           def check_connection(connection_config)
             connection_config = connection_config.with_indifferent_access
             puts "connection_config zoho books: #{connection_config}"
-            initialize_client(connection_config)
-            authenticate_client
+            create_connection(connection_config)
+            # authenticate_client
             success_status
           rescue StandardError => e
             handle_exception("ZOHO:BOOKS:DISCOVER:EXCEPTION:check_connection", "error", e)
@@ -31,23 +32,62 @@ module Multiwoven
 
           def write(sync_config, records, action = "create")
             @action = sync_config.stream.action || action
-            initialize_client(sync_config.destination.connection_specification)
+            create_connection(sync_config.destination.connection_specification)
             process_records(records, sync_config.stream)
           rescue StandardError => e
             handle_exception("ZOHO:BOOKS:WRITE:EXCEPTION:write", "error", e)
           end
 
+          # def setting_base_url(url)
+          #   @base_url = url
+          #   puts "setting_base_url only for zoho: #{@base_url}"
+          # end
+
           private
 
-          def initialize_client(config)
-            config = config.with_indifferent_access
-            @client = ::ZohoBooks::Client.new(
-              access_token: config[:access_token]
-              # client_id: config[:client_id],
-              # client_secret: config[:client_secret],
-              # organization_id: config[:organization_id]
-              # add Zoho Books specific configurations here
-            )
+          def create_connection(config)
+            # config = config.with_indifferent_access
+            @client_id = config[:client_id]
+            @client_secret = config[:client_secret]
+            @refresh_token = config[:refresh_token]
+            @organization_id = config[:organization_id]
+            @data_center = config[:data_center]
+            @base_url = config[:base_url]
+
+            # Zoho token endpoint
+            token_url = "https://accounts.zoho.com/oauth/v2/token"
+              
+            # Prepare the request parameters
+            uri = URI.parse(token_url)
+            params = {
+              client_id: @client_id,
+              client_secret: @client_secret,
+              refresh_token: @refresh_token,
+              grant_type: 'refresh_token'
+            }
+            
+            # Make the HTTP POST request to get the access token
+            response = Net::HTTP.post_form(uri, params)
+          
+            # Parse the response
+            result = JSON.parse(response.body)
+          
+            # Check if the response has an error or return the access token
+            if result["access_token"]
+              @access_token = result["access_token"]
+              puts "@access_token = result[VITORY]: #{@access_token}"
+              @access_token
+            else
+              raise "Error fetching access token: #{result['error']}"
+            end
+          end
+
+          def query(connection, query)
+            connection.exec(query) do |result|
+              result.map do |row|
+                RecordMessage.new(data: row, emitted_at: Time.now.to_i).to_multiwoven_message
+              end
+            end
           end
 
           def process_records(records, stream)
@@ -83,9 +123,9 @@ module Multiwoven
             end
           end
 
-          def authenticate_client
-            @client.get_invoices # Replace with a Zoho Books API method to test connection
-          end
+          # def authenticate_client
+          #   @client.get_invoices # Replace with a Zoho Books API method to test connection
+          # end
 
           def success_status
             ConnectionStatus.new(status: ConnectionStatusType["succeeded"]).to_multiwoven_message
