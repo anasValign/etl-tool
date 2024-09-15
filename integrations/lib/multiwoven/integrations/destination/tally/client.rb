@@ -4,6 +4,7 @@ require "stringio"
 require "net/http"
 require "uri"
 require "json"
+require 'builder' # Add builder gem for XML generation
 
 module Multiwoven
   module Integrations
@@ -54,7 +55,8 @@ module Multiwoven
             properties = stream.json_schema[:properties]
             records.each do |record_object|
               record = extract_data(record_object, properties)
-              process_record(stream, record)
+              xml_payload = convert_to_xml(record) # Convert record to XML
+              process_record(xml_payload)
               write_success += 1
             rescue StandardError => e
               handle_exception("TALLY:WRITE:EXCEPTION", "error", e)
@@ -63,18 +65,56 @@ module Multiwoven
             tracking_message(write_success, write_failure)
           end
 
-          def process_record(stream, record)
-            send_data_to_tally(record)
+          def process_record(xml_payload)
+            send_data_to_tally(xml_payload)
           end
 
-          def send_data_to_tally(record = {})
+          def send_data_to_tally(xml_payload = {})
             uri = URI.parse("#{@tally_url}/#{@company_name}")
             request = Net::HTTP::Post.new(uri)
-            request.content_type = "application/json"
-            request.body = record.to_json
+            request.content_type = 'application/xml' # Tally uses XML format
+            request.body = xml_payload
             response = Net::HTTP.start(uri.hostname, uri.port) { |http| http.request(request) }
-            
+
             raise StandardError, response.body unless response.is_a?(Net::HTTPSuccess)
+          end
+
+          def convert_to_xml(record)
+            # Using Builder gem to create XML structure
+            xml = Builder::XmlMarkup.new
+            xml.instruct! :xml, version: '1.0', encoding: 'UTF-8'
+            xml.ENVELOPE do
+              xml.HEADER do
+                xml.TALLYREQUEST 'Import Data'
+              end
+              xml.BODY do
+                xml.IMPORTDATA do
+                  xml.REQUESTDESC do
+                    xml.REPORTNAME 'Vouchers'
+                    xml.STATICVARIABLES do
+                      xml.SVCURRENTCOMPANY @company_name
+                    end
+                  end
+                  xml.REQUESTDATA do
+                    xml.TALLYMESSAGE('xmlns:UDF' => 'TallyUDF') do
+                      xml.VOUCHER do
+                        xml.DATE '20240915' # Static or dynamic date
+                        xml.VOUCHERTYPENAME 'Sales'
+                        xml.NARRATION 'Test invoice from ETL Tool'
+                        xml.VOUCHERNUMBER record[:VOUCHERNUMBER] || 'INV-1002'
+                        xml.PARTYNAME record[:PARTYNAME] || 'XYZ Ltd'
+                        xml.AMOUNT record[:AMOUNT] || 10000
+                        xml.LEDGERENTRIES__LIST do
+                          xml.LEDGERNAME 'Sales Account'
+                          xml.AMOUNT record[:AMOUNT] || 10000
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+            xml.target! # Returns the generated XML string
           end
 
           def authenticate_client

@@ -18,8 +18,16 @@ module Api
       end
 
       def check_connection
+
+        base_url = fetch_base_url(params[:name], params[:connection_spec][:data_center])
+        puts "check_connection base_url: _---- #{params[:connection_spec]} #{base_url}"
+
         connection_spec = params[:connection_spec]
         connection_spec = connection_spec.to_unsafe_h if connection_spec.respond_to?(:to_unsafe_h)
+        
+        # Add base_url to connection_spec if base_url is present
+        connection_spec[:base_url] = base_url if base_url.present?
+
         connection_status = @connector_client
                             .check_connection(
                               connection_spec
@@ -35,6 +43,10 @@ module Api
                       .connectors
                       .with_indifferent_access
         @connectors = @connectors[params[:type]] if params[:type]
+      end
+
+      def fetch_base_url(name, type)
+        ApiRepository.find_by(api_name: name, data_center: type)&.base_url
       end
 
       def set_connector_client
